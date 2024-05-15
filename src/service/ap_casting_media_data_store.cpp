@@ -10,7 +10,7 @@
 
 #if PERSIST_STREAM_DATA
 #include <filesystem>
-void create_serssion_folder(const std::string &session) { std::filesystem::create_directory(session); }
+void create_session_folder(const std::string &session) { std::filesystem::create_directory(session); }
 
 void create_resource_file(const std::string &session, const std::string &uri, const std::string &data) {
   std::string fn = generate_file_name();
@@ -48,7 +48,7 @@ bool ap_casting_media_data_store::request_media_data(const std::string &primary_
 
   if (id != e_app_unknown) {
 #if PERSIST_STREAM_DATA
-    create_serssion_folder(session_id);
+    create_session_folder(session_id);
 #endif
     app_id_ = id;
     session_id_ = session_id;

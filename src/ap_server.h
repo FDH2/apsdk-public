@@ -36,8 +36,8 @@ public:
   /// <summary>
   ///
   /// </summary>
-  /// <param name="hanlder"></param>
-  void set_handler(ap_handler_ptr &hanlder);
+  /// <param name="handler"></param>
+  void set_handler(ap_handler_ptr &handler);
 
   /// <summary>
   ///
