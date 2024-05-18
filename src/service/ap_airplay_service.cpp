@@ -71,7 +71,7 @@ uint64_t ap_airplay_connection::get_session_id() {
   return session_id_; }
 
 uint32_t ap_airplay_connection::get_session_type() {
-  printf("*** ap_airplay_connection::get_session_type: %s\n", session_type_);
+  printf("*** ap_airplay_connection::get_session_type: %u\n", session_type_);
   return session_type_; }
 
 void ap_airplay_connection::set_mirroring_handler(ap_mirroring_session_handler_ptr handler) {
