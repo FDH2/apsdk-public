@@ -102,7 +102,7 @@ protected:
 
   std::string adjust_primary_media_data(const std::string &data);
 
-  static std::string adjust_secondary_meida_data(const std::string &data);
+  static std::string adjust_secondary_media_data(const std::string &data);
 
   // For Youtube
   std::string adjust_mlhls_data(const std::string &data);

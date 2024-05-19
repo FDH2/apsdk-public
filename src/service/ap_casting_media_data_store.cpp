@@ -89,7 +89,7 @@ std::string ap_casting_media_data_store::process_media_data(const std::string &u
     media_data = adjust_primary_media_data(data);
   } else {
     // Adjust the secondary media data and cache it
-    media_data = adjust_secondary_meida_data(data);
+    media_data = adjust_secondary_media_data(data);
   }
 
   std::string path = extrac_uri_path(uri);
@@ -245,7 +245,7 @@ std::string ap_casting_media_data_store::adjust_primary_media_data(const std::st
   return data;
 }
 
-std::string ap_casting_media_data_store::adjust_secondary_meida_data(const std::string &data) {
+std::string ap_casting_media_data_store::adjust_secondary_media_data(const std::string &data) {
   std::string result = data;
 
   static std::regex youtube_pattern("#YT-EXT-CONDENSED-URL:BASE-URI=\"(.*)\",PARAMS=.*PREFIX=\"(.*)\"");
