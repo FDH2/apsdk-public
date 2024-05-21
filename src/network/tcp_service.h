@@ -101,6 +101,10 @@ protected:
     if (!e) {
       // Start the new session
       new_session_->start();
+      LOGD() << "Connection Address (Remote): "  << new_session_->socket().remote_endpoint().address().to_string();
+      LOGD() << "Connection Port (Local): " << local_endpoint_.port();
+      LOGD() << "Connection Port (Remote): " << new_session_->socket().remote_endpoint().port();
+      LOGD() << "Protocol (Remote): " << new_session_->socket().remote_endpoint().protocol().type();
 
       LOGD() << "Session (" << std::hex << new_session_.get() << ") accepted and started";
 
