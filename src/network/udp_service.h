@@ -33,7 +33,9 @@ public:
       : service_name_(name), io_context_(), io_work_(io_context_), socket_(io_context_),
         local_endpoint_(asio::ip::udp::v6(), port), worker_thread_(0) {}
 
-  ~udp_service_base() { close(); }
+  ~udp_service_base() {
+    LOGD() << "======= Close UDP service " << service_name_ << " on local port " << port(); 
+    close(); }
 
   virtual const uint16_t port() const override { return local_endpoint_.port(); }
 
@@ -54,12 +56,11 @@ public:
     socket_.bind(local_endpoint_);
     local_endpoint_ = socket_.local_endpoint();
 
-    LOGD() << "======= Creating UDP service " << service_name_ << " on local port " <<
-      local_endpoint_.port();
+    LOGD() << "======= Open UDP service " << service_name_ << " on local port " << port();
     
     return true;
   }
-
+  
   virtual void close() override {
     io_context_.stop();
 

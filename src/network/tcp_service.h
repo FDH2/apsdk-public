@@ -66,7 +66,9 @@ public:
       : single_session_(single_session), service_name_(name), io_context_(), io_work_(io_context_),
         acceptor_(io_context_), local_endpoint_(asio::ip::tcp::v6(), port), worker_thread_(0) {}
 
-  ~tcp_service_base() { cleanup(); }
+  ~tcp_service_base() {
+    LOGD() << "========= Destroy TCP service " << service_name_ << " on local port " << port() ;
+    cleanup(); }
 
   virtual const uint16_t port() const override { return local_endpoint_.port(); }
 
@@ -81,7 +83,9 @@ public:
     return true;
   }
 
-  virtual void stop() override { cleanup(); }
+  virtual void stop() override {
+    on_stop();
+    cleanup(); }
 
   virtual asio::io_context &io_context() override { return io_context_; }
 
@@ -102,8 +106,7 @@ protected:
       // Start the new session
       new_session_->start();
 
-      LOGD() << "========= Creating TCP service " << service_name_ << " on local port " << local_endpoint_.port() ;
-
+      LOGD() << "========= Start TCP service " << service_name_ << " on local port " << port() ;
       LOGD() << "========= Connection Address (Remote): "  << new_session_->socket().remote_endpoint().address().to_string();
       LOGD() << "========= Connection Port (Remote): " << new_session_->socket().remote_endpoint().port();
       LOGD() << "========= Protocol (Remote): " << new_session_->socket().remote_endpoint().protocol().type();
@@ -145,6 +148,15 @@ protected:
     return true;
   }
 
+
+
+  void on_stop() {
+    LOGD() << "========= Stop TCP service " << service_name_ << " on local port " << port() ;
+  }
+    
+  
+
+  
   void cleanup() {
     io_context_.stop();
 

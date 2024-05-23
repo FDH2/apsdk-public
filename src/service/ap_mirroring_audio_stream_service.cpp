@@ -87,11 +87,11 @@ ap_mirroring_audio_stream_service::ap_mirroring_audio_stream_service(aps::ap_cry
                                                std::placeholders::_2,
                                                std::placeholders::_3));
 
-  LOGD() << "ap_audio_stream_service (" << std::hex << this << ") is being created";
+  LOGD() << "ap_mirroring_audio_stream_service (" << std::hex << this << ") is being created";
 }
 
 ap_mirroring_audio_stream_service::~ap_mirroring_audio_stream_service() {
-  LOGD() << "ap_audio_stream_service (" << std::hex << this << ") is being destroyed";
+  LOGD() << "ap_mirroring_audio_stream_service (" << std::hex << this << ") is being destroyed";
 }
 
 uint16_t ap_mirroring_audio_stream_service::data_port() const { return data_service_.port(); }

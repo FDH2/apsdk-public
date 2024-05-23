@@ -371,10 +371,11 @@ void ap_airplay_connection::setup_handler(const request &req, response &res) {
       }
 
       timing_sync_service_->set_server_endpoint(socket_.remote_endpoint().address(), (uint16_t)timing_port);
-
+      printf("*** MIRRORING SESSION:  remote  timing port on %s is %u:, local %u\n", socket_.remote_endpoint().address().to_string().c_str(),
+	     (uint16_t) timing_port, timing_sync_service_->port());
       auto_plist content = plist_object_dict(
           2, "eventPort", plist_object_integer(0), "timingPort", plist_object_integer(timing_sync_service_->port()));
-      printf("*** response plist, setup_handler timing port:\n");
+ 
       res.with_status(ok).with_content_type(APPLICATION_BINARY_PLIST).with_content(content.to_bytes_array());
 
       return;
