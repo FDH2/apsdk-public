@@ -54,6 +54,9 @@ public:
     socket_.bind(local_endpoint_);
     local_endpoint_ = socket_.local_endpoint();
 
+    LOGD() << "======= Creating UDP service " << service_name_ << " on local port " <<
+      local_endpoint_.port();
+    
     return true;
   }
 
