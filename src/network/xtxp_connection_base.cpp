@@ -9,6 +9,7 @@ request_route_table::~request_route_table() {}
 
 void request_route_table::register_request_route(const request_route_t &route) {
   std::lock_guard<std::mutex> l(mtx_);
+  printf("+++++xtxp_connection_base:request_route_table:register_request_route\n");
   auto it_scheme_method = route_table_.find(route.scheme);
   if (it_scheme_method == route_table_.end()) {
     path_map path_to_handler;
@@ -36,6 +37,7 @@ void request_route_table::register_request_route(const request_route_t &route) {
 
 request_handler request_route_table::query_handler(const request &req, error_code &ec) {
   std::lock_guard<std::mutex> l(mtx_);
+  printf("+++++xtxp_connection_base:request_route_table::query_handler\n");
 
   std::string scheme;
   auto index = req.scheme_version.find('/');
@@ -92,33 +94,34 @@ xtxp_connection_base::xtxp_connection_base(asio::io_context &io_ctx)
 xtxp_connection_base::~xtxp_connection_base() {}
 
 void xtxp_connection_base::register_request_route(const request_route_t &route) {
+  printf("+++++xtxp_connection_base::register_request_route\n");
   route_table_.register_request_route(route);
 }
 
 void xtxp_connection_base::start() {
-  printf("+++++xtxp: start\n");
+  printf("+++++xtxp_connection_base:start\n");
   post_receive_message_head(); }
 
 void xtxp_connection_base::send_request(const request &req) {
-  printf("+++++xtxp: send_request\n");
+  printf("+++++xtxp_connection_base::send_request\n");
   std::string data = req.serialize();
   socket_.send(asio::buffer(data.data(), data.length()));
 }
 
 bool xtxp_connection_base::is_reversed() {
-  printf("+++++xtxp: is_reversed? %d\n", is_reversed_);
+  printf("+++++xtxp_connection_base::is_reversed? %d\n", is_reversed_);
   return is_reversed_; }
 
 void xtxp_connection_base::reverse() {
-  printf("+++++xtxp: reversed\n");
+  printf("+++++xtxp_connection_base::reverse\n");
   is_reversed_ = true; }
 
 void xtxp_connection_base::add_common_header(const request &req, response &res) {
-  printf("+++++xtxp: add_common_header\n");
+  printf("+++++xtxp_connection_base::add_common_header\n");
 }
 
 void xtxp_connection_base::post_receive_message_head() {
-  printf("+++++xtxp: post_receive_message_head\n");
+  printf("+++++xtxp_connection_base::post_receive_message_head\n");
   asio::async_read_until(socket_,
                          in_stream_,
                          RNRN_LINE_BREAK,
@@ -130,6 +133,7 @@ void xtxp_connection_base::post_receive_message_head() {
 }
 
 void xtxp_connection_base::method_not_found_handler(const request &req, response &res) {
+  printf("+++++xtxp_connection_base::method_not_found_handler\n");
   LOGE() << "***** Method Not Allowed " << request_.method << " " << request_.uri;
 
   // Method not found
@@ -138,6 +142,7 @@ void xtxp_connection_base::method_not_found_handler(const request &req, response
 }
 
 void xtxp_connection_base::path_not_found_handler(const request &req, response &res) {
+  printf("+++++xtxp_connection_base::path_not_found_handler\n");
   LOGE() << "***** Path Not Found " << request_.method << " " << request_.uri;
 
   // Path not found
@@ -146,7 +151,7 @@ void xtxp_connection_base::path_not_found_handler(const request &req, response &
 }
 
 void xtxp_connection_base::on_message_head_received(const asio::error_code &e, std::size_t bytes_transferred) {
-  printf("+++++xtxp: on_message_head_received: \n");
+  printf("+++++xtxp_connection_base::on_message_head_received: \n");
   // If error then return
   if (e) {
       printf("+++++xtxp: had error\n");
@@ -223,7 +228,7 @@ void xtxp_connection_base::on_message_head_received(const asio::error_code &e, s
 }
 
 void xtxp_connection_base::post_receive_message_content() {
-  printf("+++++xtxp: post_receive_message_content\n");
+  printf("+++++xtxp_connection_base::post_receive_message_content\n");
   if (is_reversed_) {
     response_.content.clear();
   } else {
@@ -244,7 +249,7 @@ void xtxp_connection_base::post_receive_message_content() {
 }
 
 void xtxp_connection_base::on_message_content_received(const asio::error_code &e, std::size_t bytes_transferred) {
-  printf("+++++xtxp: on_message_content_received: \n");
+  printf("+++++xtxp_connection_base::on_message_content_received: \n");
   if (e) {
     handle_socket_error(e);
       printf("+++++xtxp: had error: \n");
@@ -270,7 +275,7 @@ void xtxp_connection_base::on_message_content_received(const asio::error_code &e
 }
 
 void xtxp_connection_base::post_send_response(const response &res) {
-  printf("+++++xtxp: post_send_response: \n");
+  printf("+++++xtxp_connection_base::post_send_response: \n");
   std::ostream os(&out_stream_);
   os << res.serialize();
   //res.dump();
@@ -284,7 +289,7 @@ void xtxp_connection_base::post_send_response(const response &res) {
 }
 
 void xtxp_connection_base::on_response_sent(const asio::error_code &e, std::size_t bytes_transferred) {
-  printf("+++++xtxp: on_response_sent: \n");
+  printf("+++++xtxp_connection_base::on_response_sent: \n");
   if (e) {
       printf("+++++xtxp: had error: \n");
     return handle_socket_error(e);
@@ -294,6 +299,7 @@ void xtxp_connection_base::on_response_sent(const asio::error_code &e, std::size
 }
 
 void xtxp_connection_base::handle_socket_error(const asio::error_code &e) {
+  printf("+++++xtxp_connection_base::handle_socket_error \n");
   switch (e.value()) {
 
   case asio::error::eof:
@@ -333,11 +339,12 @@ void xtxp_connection_base::handle_socket_error(const asio::error_code &e) {
 
 std::size_t xtxp_connection_base::body_completion_condition(const asio::error_code &error,
                                                             std::size_t bytes_transferred) {
+  printf("+++++xtxp_connection_base::body_completion_condition \n");
   return request_.content_length - in_stream_.size();
 }
 
 void xtxp_connection_base::process_request() {
-  printf("+++++xtxp: process_request\n");
+  printf("+++++xtxp_connection_base::process_request\n");
 
   response res(request_.scheme_version);
 
@@ -365,7 +372,7 @@ void xtxp_connection_base::process_request() {
 }
 
 void xtxp_connection_base::process_response() {
-  printf("+++++xtxp: process_reponse\n");
+  printf("+++++xtxp_connection_base::process_reponse\n");
 }
 
 } // namespace network
