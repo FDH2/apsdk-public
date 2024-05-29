@@ -5,7 +5,7 @@
 bool aps::ap_casting_content_parser::get_volume_value(float &value, const char *content) {
   static std::regex pattern("volume: ([-+]?[0-9]+\\.[0-9]+)");
   std::cmatch groups;
-  printf(" *** ap_casting_content_parser::get_volume_value\n");
+  printf("cccccc ap_casting_content_parser::get_volume_value\n");
   
   if (std::regex_search(content, groups, pattern)) {
     if (groups.size() > 1) {
@@ -21,7 +21,7 @@ bool aps::ap_casting_content_parser::get_progress_values(uint64_t &start, uint64
                                                          const char *content) {
   static std::regex pattern("progress: ([0-9]+)\\/([0-9]+)\\/([0-9]+)");
   std::cmatch groups;
-  printf(" *** ap_casting_content_parser::get_progess_values\n");
+  printf("cccccc ap_casting_content_parser::get_progess_values\n");
 
   if (std::regex_search(content, groups, pattern)) {
     if (groups.size() > 3) {
@@ -38,8 +38,7 @@ bool aps::ap_casting_content_parser::get_progress_values(uint64_t &start, uint64
 bool aps::ap_casting_content_parser::get_play_parameters(std::string &location, float &start, const char *content) {
   static std::regex pattern("Content-Location: (.*)\\nStart-Position: ([-+]?[0-9]+\\.[0-9]+)");
   std::cmatch groups;
-  printf(" *** ap_casting_content_parser::get_play_parameters\n");
-  
+  printf("ccccccc ap_casting_content_parser::get_play_parameters\n");
   if (std::regex_search(content, groups, pattern)) {
     if (groups.size() > 2) {
       location = groups.str(1);

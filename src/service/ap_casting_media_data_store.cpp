@@ -5,7 +5,7 @@
 #include <service/ap_casting_event_connection_manager.h>
 #include <service/ap_casting_media_data_store.h>
 #include <utils/utils.h>
-
+#include <stdio.h>
 #define PERSIST_STREAM_DATA 0
 
 #if PERSIST_STREAM_DATA
@@ -31,17 +31,21 @@ aps::service::ap_casting_media_data_store &ap_casting_media_data_store::get() {
   return s_instance;
 }
 
-ap_casting_media_data_store::ap_casting_media_data_store() : app_id_(e_app_unknown) { hlsparse_global_init(); }
+ap_casting_media_data_store::ap_casting_media_data_store() : app_id_(e_app_unknown) {
+  printf("~~~ ap_casting_media_store::ap_casting_media_data_store\n");
+  hlsparse_global_init(); }
 
 ap_casting_media_data_store::~ap_casting_media_data_store() = default;
 
 void ap_casting_media_data_store::set_store_root(uint16_t port) {
+  printf("~~~ ap_casting_media_store::set_store_root\n");
   std::ostringstream oss;
   oss << "localhost:" << port;
   host_ = oss.str();
 }
 
 bool ap_casting_media_data_store::request_media_data(const std::string &primary_uri, const std::string &session_id) {
+  printf("~~~ ap_casting_media_store::request_media_data\n");
   reset();
 
   app_id id = get_appi_id(primary_uri);
@@ -63,7 +67,7 @@ bool ap_casting_media_data_store::request_media_data(const std::string &primary_
 
 std::string ap_casting_media_data_store::process_media_data(const std::string &uri, const std::string &data) {
   std::string media_data;
-
+  printf("~~~ ap_casting_media_store::process_media_data\n");
   if (is_primary_data_uri(uri)) {
     master_t master_playlist;
     if (HLS_OK == hlsparse_master_init(&master_playlist)) {
@@ -111,6 +115,7 @@ std::string ap_casting_media_data_store::process_media_data(const std::string &u
 }
 
 std::string ap_casting_media_data_store::query_media_data(const std::string &path) {
+  printf("~~~ ap_casting_media_store::query_media_data\n");
   std::lock_guard<std::mutex> l(mtx_);
   auto it = media_data_.find(path);
   if (it != media_data_.end()) {
@@ -120,6 +125,7 @@ std::string ap_casting_media_data_store::query_media_data(const std::string &pat
 }
 
 void ap_casting_media_data_store::reset() {
+  printf("~~~ ap_casting_media_store::reset\n");
   app_id_ = e_app_unknown;
   request_id_ = 1;
   session_id_.clear();
@@ -131,6 +137,7 @@ void ap_casting_media_data_store::reset() {
 
 ap_casting_media_data_store::app_id ap_casting_media_data_store::get_appi_id(const std::string &uri) {
   // Youtube
+  printf("~~~ ap_casting_media_store::get_appi_id\n");
   if (0 == uri.find(MLHLS_SCHEME))
     return e_app_youtube;
 
@@ -143,6 +150,7 @@ ap_casting_media_data_store::app_id ap_casting_media_data_store::get_appi_id(con
 
 void ap_casting_media_data_store::add_media_data(const std::string &uri, const std::string &data) {
   {
+    printf("~~~ ap_casting_media_store::add_media_data\n");
     std::lock_guard<std::mutex> l(mtx_);
     media_data_[uri] = data;
   }
@@ -153,6 +161,7 @@ void ap_casting_media_data_store::add_media_data(const std::string &uri, const s
 }
 
 bool ap_casting_media_data_store::is_primary_data_uri(const std::string &uri) {
+  printf("~~~ ap_casting_media_store::is_primary_data_uri\n");
   if (strstr(uri.c_str(), MASTER_M3U8))
     return true;
   if (strstr(uri.c_str(), INDEX_M3U8))
@@ -163,6 +172,7 @@ bool ap_casting_media_data_store::is_primary_data_uri(const std::string &uri) {
 
 void ap_casting_media_data_store::send_fcup_request(const std::string &uri) {
   std::ostringstream oss;
+  printf("~~~ ap_casting_media_store::send_fcup_request\n");
   // clang-format off
   oss << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
          "<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n"
@@ -209,14 +219,18 @@ void ap_casting_media_data_store::send_fcup_request(const std::string &uri) {
 }
 
 std::string ap_casting_media_data_store::adjust_primary_uri(const std::string &uri) {
+  printf("~~~ ap_casting_media_store::adjust_primary_uri\n");
   std::string s = uri;
+  printf("~~~~~~~~input uri: %s\n",s.c_str());
   s = string_replace(s, SCHEME_LIST, HTTP_SCHEME);
   s = string_replace(s, HOST_LIST, host_);
+  printf("~~~~~~~output uri: %s\n",s.c_str());
   return s;
 }
 
 std::string ap_casting_media_data_store::extrac_uri_path(const std::string &uri) {
   std::string s = uri;
+  printf("~~~ ap_casting_media_store::extrac_uri_path\n");
   switch (app_id_) {
   case e_app_youtube:
     s = string_replace(s, MLHLS_SCHEME, "");
@@ -234,6 +248,7 @@ std::string ap_casting_media_data_store::extrac_uri_path(const std::string &uri)
 }
 
 std::string ap_casting_media_data_store::adjust_primary_media_data(const std::string &data) {
+  printf("~~~ ap_casting_media_store::adjust_primary_media_data\n");
   switch (app_id_) {
   case e_app_youtube:
     return adjust_mlhls_data(data);
@@ -247,7 +262,7 @@ std::string ap_casting_media_data_store::adjust_primary_media_data(const std::st
 
 std::string ap_casting_media_data_store::adjust_secondary_media_data(const std::string &data) {
   std::string result = data;
-
+  printf("~~~ ap_casting_media_store::adjust_secondary_media_data\n");
   static std::regex youtube_pattern("#YT-EXT-CONDENSED-URL:BASE-URI=\"(.*)\",PARAMS=.*PREFIX=\"(.*)\"");
   std::cmatch groups;
 
@@ -271,12 +286,14 @@ std::string ap_casting_media_data_store::adjust_secondary_media_data(const std::
 
 std::string ap_casting_media_data_store::adjust_mlhls_data(const std::string &data) {
   std::string s = data;
+  printf("~~~ ap_casting_media_store::adjust_mlhls_data\n");
   s = string_replace(s, MLHLS_SCHEME, HTTP_SCHEME);
   s = string_replace(s, HOST_LIST, host_);
   return s;
 }
 
 std::string ap_casting_media_data_store::adjust_nfhls_data(const std::string &data) {
+  printf("~~~ ap_casting_media_store::adjust_nfhls_data\n");
   std::string s = data;
   std::string replace = HTTP_SCHEME;
   replace += host_;
