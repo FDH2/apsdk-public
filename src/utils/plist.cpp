@@ -2,6 +2,7 @@
 #include <cstring>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <ctype.h>
 
 #include <asio.hpp>
 
@@ -58,6 +59,31 @@ extern "C" {
       uint32_t plist_len;
       plist_to_xml(plist_root_node, &plist_xml, &plist_len);
       printf("%s\n",plist_xml);
+      if (strstr(plist_xml, "FCUP_Response_Data")) {
+	printf("FCUP_Response_Data:\n");
+	plist_t plist_dict_node = plist_dict_get_item(plist_root_node, "params");
+	if (PLIST_IS_DICT(plist_dict_node)) {
+	  plist_t plist_fcup_node = plist_dict_get_item(plist_dict_node, "FCUP_Response_Data");
+	  char *fcup_data = NULL;
+	  uint64_t fcup_data_len = 0;
+	  plist_get_data_val(plist_fcup_node, &fcup_data, &fcup_data_len);
+	  printf("fcup_data_len %d\n", fcup_data_len);
+
+	  for (int i = 0; i < fcup_data_len; i++) {
+	    printf("%c", fcup_data[i]);
+	    if (i%80 == 79) printf("\n");
+	}
+	printf("\n");
+
+	
+
+	  free (fcup_data);
+	  plist_free(plist_fcup_node);
+	}
+	plist_free(plist_dict_node);
+      }
+      
+ 
       free(plist_xml);
       plist_free(plist_root_node);
     }
