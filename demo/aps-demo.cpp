@@ -110,7 +110,8 @@ public:
   virtual void on_video_play(const uint64_t session_id, const std::string &location, const float start_pos) override {
     LOGI() << "on_video_play: " << location << ", session: " << session_id << std::endl;
     session_ = session_id;
-    std::string command = "nohup ffplay " + location + " &";
+    std::string command = "nohup gst-launch-1.0 playbin uri=" + location + " &";
+    printf("PLAY=================:\"%s\"/n", command.c_str());
     system(command.c_str());
   }
 
