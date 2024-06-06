@@ -166,6 +166,7 @@ void xtxp_connection_base::on_message_head_received(const asio::error_code &e, s
 
   bool parse_result = false;
   if (is_reversed_) {
+    printf(">>>>>>>>>>>>>receive_response (reverse_http)\n%s\n", head_data.c_str());
     // Parse the request head
     parse_result = parser_.parse(response_, head_data);
   } else {
@@ -258,6 +259,7 @@ void xtxp_connection_base::on_message_content_received(const asio::error_code &e
   }
 
   if (is_reversed_) {
+    
     response_.content.assign(asio::buffers_begin(in_stream_.data()),
                              asio::buffers_begin(in_stream_.data()) + in_stream_.size());
     in_stream_.consume(in_stream_.size());
