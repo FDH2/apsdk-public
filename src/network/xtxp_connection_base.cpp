@@ -104,6 +104,7 @@ void xtxp_connection_base::start() {
 
 void xtxp_connection_base::send_request(const request &req) {
   printf("+++++xtxp_connection_base::send_request\n");
+  print_request(req, ">>>>>>>>>>>>>outgoing (reverse http)");
   std::string data = req.serialize();
   socket_.send(asio::buffer(data.data(), data.length()));
 }

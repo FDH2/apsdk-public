@@ -820,7 +820,9 @@ void ap_airplay_connection::post_action_handler(const request &req, response &re
   //DUMP_REQUEST_WITH_CONNECTION(req);
     print_request(req, "");
   // req.body (bplist)
-
+   
+    //print_FCUP_Response_Data(req);
+    
   auto_plist data_obj = plist_object_from_bplist(req.content.data(), (uint32_t)req.content.size());
   if (!data_obj) {
     res.with_status(bad_request);
