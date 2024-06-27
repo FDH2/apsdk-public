@@ -1,3 +1,24 @@
+/* 
+ *  File: xtxp_connection_base.h
+ *  Project: apsdk
+ *  Created: Oct 25, 2018
+ *  Author: Sheen Tian
+ *  
+ *  This file is part of apsdk (https://github.com/air-display/apsdk-public) 
+ *  Copyright (C) 2018-2024 Sheen Tian 
+ *  
+ *  apsdk is free software: you can redistribute it and/or modify it under the terms 
+ *  of the GNU General Public License as published by the Free Software Foundation, 
+ *  either version 3 of the License, or (at your option) any later version.
+ *  
+ *  apsdk is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *  See the GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License along with Foobar. 
+ *  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #pragma once
 #include <array>
 #include <map>
@@ -15,12 +36,12 @@ namespace network {
 /// <summary>
 ///
 /// </summary>
-typedef std::function<void(const request &req, response &res)> request_hanlder;
+typedef std::function<void(const request &req, response &res)> request_handler;
 
 /// <summary>
 /// path -> handler
 /// </summary>
-typedef std::map<std::string, request_hanlder> path_map;
+typedef std::map<std::string, request_handler> path_map;
 
 /// <summary>
 /// method -> path table
@@ -36,7 +57,7 @@ struct request_route_s {
   std::string scheme;
   std::string method;
   std::string path;
-  request_hanlder handler;
+  request_handler handler;
 };
 typedef request_route_s request_route_t;
 
@@ -59,7 +80,7 @@ public:
 
   void register_request_route(const request_route_t &route);
 
-  request_hanlder query_handler(const request &req, error_code &ec);
+  request_handler query_handler(const request &req, error_code &ec);
 
 private:
   route_table route_table_;

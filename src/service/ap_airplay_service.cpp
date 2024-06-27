@@ -1,4 +1,25 @@
-﻿#include <chrono>
+/* 
+ *  File: ap_airplay_service.cpp
+ *  Project: apsdk
+ *  Created: Oct 25, 2018
+ *  Author: Sheen Tian
+ *  
+ *  This file is part of apsdk (https://github.com/air-display/apsdk-public) 
+ *  Copyright (C) 2018-2024 Sheen Tian 
+ *  
+ *  apsdk is free software: you can redistribute it and/or modify it under the terms 
+ *  of the GNU General Public License as published by the Free Software Foundation, 
+ *  either version 3 of the License, or (at your option) any later version.
+ *  
+ *  apsdk is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *  See the GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License along with Foobar. 
+ *  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include <chrono>
 #include <cstring>
 #include <ctime>
 #include <exception>
@@ -21,14 +42,14 @@ using namespace aps::service::details;
 
 namespace aps {
 namespace service {
-ap_airplay_connection::ap_airplay_connection(asio::io_context &io_ctx, ap_config_ptr &config, ap_handler_ptr &hanlder,
+ap_airplay_connection::ap_airplay_connection(asio::io_context &io_ctx, ap_config_ptr &config, ap_handler_ptr &handler,
                                              tcp_service_weak_ptr service)
     : xtxp_connection_base(io_ctx)
     , session_id_(0)
     , session_type_(unknown_session)
     , start_pos_in_ms_(0)
     , config_(config)
-    , handler_(hanlder)
+    , handler_(handler)
     , service_(std::move(service))
     , mirroring_session_handler_(nullptr)
     , video_session_handler_(nullptr) {
@@ -836,7 +857,7 @@ void ap_airplay_connection::post_action_handler(const request &req, response &re
     }
 
     res.with_content_type(TEXT_APPLE_PLIST_XML).with_content(ERROR_STATUS_RESPONSE);
-  } else if (0 == compare_string_no_case(type, "playlistInster")) {
+  } else if (0 == compare_string_no_case(type, "playlistInsert")) {
     LOGD() << "Action type: " << type << ". Add new playback.";
 
   } else if (0 == compare_string_no_case(type, "playlistRemove")) {
@@ -1147,7 +1168,7 @@ ap_airplay_service::ap_airplay_service(ap_config_ptr &config, uint16_t port /*= 
 
 ap_airplay_service::~ap_airplay_service() = default;
 
-void ap_airplay_service::set_handler(ap_handler_ptr &hanlder) { handler_ = hanlder; }
+void ap_airplay_service::set_handler(ap_handler_ptr &handler) { handler_ = handler; }
 
 tcp_connection_ptr ap_airplay_service::prepare_new_connection() {
   return std::make_shared<ap_airplay_connection>(io_context(), config_, handler_, shared_from_this());

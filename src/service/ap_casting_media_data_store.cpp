@@ -1,4 +1,25 @@
-﻿#include <fstream>
+/* 
+ *  File: ap_casting_media_data_store.cpp
+ *  Project: apsdk
+ *  Created: Oct 25, 2018
+ *  Author: Sheen Tian
+ *  
+ *  This file is part of apsdk (https://github.com/air-display/apsdk-public) 
+ *  Copyright (C) 2018-2024 Sheen Tian 
+ *  
+ *  apsdk is free software: you can redistribute it and/or modify it under the terms 
+ *  of the GNU General Public License as published by the Free Software Foundation, 
+ *  either version 3 of the License, or (at your option) any later version.
+ *  
+ *  apsdk is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+ *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+ *  See the GNU General Public License for more details.
+ *  
+ *  You should have received a copy of the GNU General Public License along with Foobar. 
+ *  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#include <fstream>
 #include <regex>
 
 #include <hlsparser/hlsparse.h>
@@ -10,7 +31,7 @@
 
 #if PERSIST_STREAM_DATA
 #include <filesystem>
-void create_serssion_folder(const std::string &session) { std::filesystem::create_directory(session); }
+void create_session_folder(const std::string &session) { std::filesystem::create_directory(session); }
 
 void create_resource_file(const std::string &session, const std::string &uri, const std::string &data) {
   std::string fn = generate_file_name();
@@ -48,7 +69,7 @@ bool ap_casting_media_data_store::request_media_data(const std::string &primary_
 
   if (id != e_app_unknown) {
 #if PERSIST_STREAM_DATA
-    create_serssion_folder(session_id);
+    create_session_folder(session_id);
 #endif
     app_id_ = id;
     session_id_ = session_id;
@@ -71,14 +92,14 @@ std::string ap_casting_media_data_store::process_media_data(const std::string &u
 
         // Save all media uri
         media_list_t *media_item = &master_playlist.media;
-        while (media_item && media_item->data) {
+        while (media_item && media_item->data && media_item->data->uri) {
           uri_stack_.push(media_item->data->uri);
           media_item = media_item->next;
         }
 
         // Save all stream uri
         stream_inf_list_t *stream_item = &master_playlist.stream_infs;
-        while (stream_item && stream_item->data) {
+        while (stream_item && stream_item->data && stream_item->data->uri) {
           uri_stack_.push(stream_item->data->uri);
           stream_item = stream_item->next;
         }
@@ -89,10 +110,10 @@ std::string ap_casting_media_data_store::process_media_data(const std::string &u
     media_data = adjust_primary_media_data(data);
   } else {
     // Adjust the secondary media data and cache it
-    media_data = adjust_secondary_meida_data(data);
+    media_data = adjust_secondary_media_data(data);
   }
 
-  std::string path = extrac_uri_path(uri);
+  std::string path = extract_uri_path(uri);
 
   if (!path.empty() && !media_data.empty()) {
     add_media_data(path, media_data);
@@ -215,7 +236,7 @@ std::string ap_casting_media_data_store::adjust_primary_uri(const std::string &u
   return s;
 }
 
-std::string ap_casting_media_data_store::extrac_uri_path(const std::string &uri) {
+std::string ap_casting_media_data_store::extract_uri_path(const std::string &uri) {
   std::string s = uri;
   switch (app_id_) {
   case e_app_youtube:
@@ -245,7 +266,7 @@ std::string ap_casting_media_data_store::adjust_primary_media_data(const std::st
   return data;
 }
 
-std::string ap_casting_media_data_store::adjust_secondary_meida_data(const std::string &data) {
+std::string ap_casting_media_data_store::adjust_secondary_media_data(const std::string &data) {
   std::string result = data;
 
   static std::regex youtube_pattern("#YT-EXT-CONDENSED-URL:BASE-URI=\"(.*)\",PARAMS=.*PREFIX=\"(.*)\"");
